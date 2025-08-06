@@ -1,0 +1,81 @@
+{
+  "package.json": {
+    "name": "prompt-manager",
+    "displayName": "AI Prompt Manager",
+    "description": "Create structured prompts with tracking and optimization for AI tools",
+    "version": "1.0.0",
+    "engines": {
+      "vscode": "^1.74.0"
+    },
+    "categories": [
+      "Other"
+    ],
+    "activationEvents": [],
+    "main": "./extension.js",
+    "contributes": {
+      "commands": [
+        {
+          "command": "promptManager.createPrompt",
+          "title": "Create Structured Prompt",
+          "category": "Prompt Manager"
+        },
+        {
+          "command": "promptManager.viewHistory",
+          "title": "View Prompt History",
+          "category": "Prompt Manager"
+        },
+        {
+          "command": "promptManager.ratePrompt",
+          "title": "Rate Last Prompt",
+          "category": "Prompt Manager"
+        },
+        {
+          "command": "promptManager.optimizePrompt",
+          "title": "Show Optimization Tips",
+          "category": "Prompt Manager"
+        }
+      ],
+      "keybindings": [
+        {
+          "command": "promptManager.createPrompt",
+          "key": "ctrl+alt+p",
+          "mac": "cmd+alt+p"
+        }
+      ],
+      "menus": {
+        "commandPalette": [
+          {
+            "command": "promptManager.createPrompt"
+          },
+          {
+            "command": "promptManager.viewHistory"
+          },
+          {
+            "command": "promptManager.optimizePrompt"
+          }
+        ],
+        "editor/context": [
+          {
+            "command": "promptManager.createPrompt",
+            "group": "ai@1"
+          }
+        ]
+      }
+    },
+    "scripts": {
+      "vscode:prepublish": "npm run package",
+      "compile": "webpack",
+      "watch": "webpack --watch",
+      "package": "webpack --mode production --devtool hidden-source-map"
+    },
+    "dependencies": {},
+    "devDependencies": {
+      "@types/node": "16.x",
+      "@types/vscode": "^1.74.0",
+      "webpack": "^5.0.0",
+      "webpack-cli": "^4.0.0"
+    }
+  },
+  "README.md": "# AI Prompt Manager\n\nStructured prompt creation with tracking and optimization for VS Code.\n\n## Features\n\n- **Structured Prompt Creation**: Follow best practices with context, goal, constraints format\n- **Model Selection**: Auto-suggest optimal AI model based on task complexity\n- **History Tracking**: Keep records of all prompts with timestamps and ratings\n- **Performance Analytics**: Track efficiency, accuracy, and satisfaction metrics\n- **Optimization Tips**: Get suggestions based on prompt performance data\n\n## Usage\n\n1. **Create Prompt**: `Ctrl+Alt+P` or Command Palette > \"Create Structured Prompt\"\n2. **View History**: Command Palette > \"View Prompt History\"\n3. **Rate Prompts**: Rate completed prompts for optimization insights\n\n## Integration\n\nWorks with your existing configuration:\n- Reads `.claude/config.json` and `copilot.yml`\n- Auto-detects Moodle, React, and other project types\n- Suggests appropriate AI model based on task complexity\n\n## Commands\n\n- `promptManager.createPrompt`: Create structured prompt\n- `promptManager.viewHistory`: View history and analytics\n- `promptManager.optimizePrompt`: Show optimization suggestions\n\n## Configuration\n\nNo additional configuration needed. Extension automatically detects project context and existing AI tool configurations.",
+  ".vscodeignore": "node_modules\n.vscode/**\n.vscode-test/**\n**/*.map\nsrc/**\n.gitignore\nwebpack.config.js\n**/*.ts"
+}
