@@ -1,4 +1,4 @@
-// extension.js - Main extension file
+// extension.js - Complete VS Code Prompt Manager Extension
 const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
@@ -240,21 +240,6 @@ Expected Output: ${data.expectedOutput}`;
     });
   }
 
-  ratePrompt(promptId, rating) {
-    const prompt = this.promptHistory.find((p) => p.id === promptId);
-    if (prompt) {
-      prompt.rating = rating;
-      prompt.notes = rating.notes;
-      this.saveHistory();
-      vscode.window.showInformationMessage("Prompt rating saved!");
-    }
-  }
-
-  deletePrompt(promptId) {
-    this.promptHistory = this.promptHistory.filter((p) => p.id !== promptId);
-    this.saveHistory();
-  }
-
   async showRatingInterface() {
     if (this.promptHistory.length === 0) {
       vscode.window.showWarningMessage("No prompts to rate");
@@ -312,6 +297,21 @@ Expected Output: ${data.expectedOutput}`;
       satisfaction: parseInt(satisfaction),
       notes: notes || "",
     });
+  }
+
+  ratePrompt(promptId, rating) {
+    const prompt = this.promptHistory.find((p) => p.id === promptId);
+    if (prompt) {
+      prompt.rating = rating;
+      prompt.notes = rating.notes;
+      this.saveHistory();
+      vscode.window.showInformationMessage("Prompt rating saved!");
+    }
+  }
+
+  deletePrompt(promptId) {
+    this.promptHistory = this.promptHistory.filter((p) => p.id !== promptId);
+    this.saveHistory();
   }
 
   showOptimizationSuggestions() {
@@ -372,6 +372,11 @@ Expected Output: ${data.expectedOutput}`;
 
     if (analytics.avgSatisfaction < 3) {
       suggestions += "• Be more explicit about expected output format\n";
+    }
+
+    if (analytics.ratedPrompts < analytics.totalPrompts * 0.5) {
+      suggestions +=
+        "• Rate more prompts to get better optimization insights\n";
     }
 
     return suggestions;
