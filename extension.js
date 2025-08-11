@@ -206,15 +206,181 @@ class PromptManager {
   }
 
   formatPrompt(data) {
-    return `Context: ${data.context}
+    const optimized = this.optimizePromptContent(data);
+    return `Context: ${optimized.context}
 
-Goal: ${data.goal}
+Goal: ${optimized.goal}
 
-Current State: ${data.currentState}
+Current State: ${optimized.currentState}
 
-Constraints: ${data.constraints}
+Constraints: ${optimized.constraints}
 
-Expected Output: ${data.expectedOutput}`;
+Expected Output: ${optimized.expectedOutput}`;
+  }
+
+  optimizePromptContent(data) {
+    return {
+      context: this.enhanceContext(data.context),
+      goal: this.enhanceGoal(data.goal),
+      currentState: this.enhanceCurrentState(data.currentState),
+      constraints: this.enhanceConstraints(data.constraints),
+      expectedOutput: this.enhanceExpectedOutput(data.expectedOutput),
+    };
+  }
+
+  enhanceContext(context) {
+    if (!context) return context;
+
+    // Add specificity cues
+    let enhanced = context;
+
+    // Add project type context if missing
+    if (
+      !enhanced.toLowerCase().includes("moodle") &&
+      !enhanced.toLowerCase().includes("react")
+    ) {
+      const workspaceContext = this.getWorkspaceTypeHint();
+      if (workspaceContext) {
+        enhanced = `${workspaceContext}: ${enhanced}`;
+      }
+    }
+
+    // Suggest adding version/environment info if vague
+    if (enhanced.length < 30) {
+      enhanced +=
+        " (Consider adding: version, environment, specific component)";
+    }
+
+    return enhanced;
+  }
+
+  enhanceGoal(goal) {
+    if (!goal) return goal;
+
+    let enhanced = goal;
+
+    // Make goals more specific
+    if (
+      enhanced.toLowerCase().includes("fix") &&
+      !enhanced.toLowerCase().includes("how")
+    ) {
+      enhanced = `Identify root cause and provide solution to ${enhanced.toLowerCase()}`;
+    }
+
+    if (enhanced.toLowerCase().includes("create") && enhanced.length < 50) {
+      enhanced += " with step-by-step implementation details";
+    }
+
+    // Add success criteria prompt
+    if (
+      !enhanced.toLowerCase().includes("success") &&
+      !enhanced.toLowerCase().includes("criteria")
+    ) {
+      enhanced += ". Include clear success criteria for completion";
+    }
+
+    return enhanced;
+  }
+
+  enhanceCurrentState(currentState) {
+    if (!currentState) return currentState;
+
+    let enhanced = currentState;
+
+    // Prompt for code/error details if missing
+    if (enhanced.length < 40) {
+      enhanced +=
+        "\n\n[Consider adding: relevant code snippets, error messages, current behavior vs expected behavior]";
+    }
+
+    // Suggest file structure if architectural
+    if (
+      enhanced.toLowerCase().includes("file") ||
+      enhanced.toLowerCase().includes("structure")
+    ) {
+      enhanced += "\n[Tip: Include file tree or relevant file paths]";
+    }
+
+    return enhanced;
+  }
+
+  enhanceConstraints(constraints) {
+    if (!constraints) return "Follow best practices and maintain code quality";
+
+    let enhanced = constraints;
+
+    // Add standard constraints if missing
+    const commonConstraints = [];
+
+    if (!enhanced.toLowerCase().includes("standard")) {
+      const projectType = this.getWorkspaceTypeHint();
+      if (projectType === "Moodle") {
+        commonConstraints.push("Follow Moodle coding standards");
+      } else if (projectType === "React") {
+        commonConstraints.push(
+          "Use React best practices and accessibility standards"
+        );
+      }
+    }
+
+    if (
+      !enhanced.toLowerCase().includes("backward") &&
+      !enhanced.toLowerCase().includes("breaking")
+    ) {
+      commonConstraints.push("No breaking changes to existing functionality");
+    }
+
+    if (!enhanced.toLowerCase().includes("performance")) {
+      commonConstraints.push("Consider performance implications");
+    }
+
+    if (commonConstraints.length > 0) {
+      enhanced += (enhanced ? ". " : "") + commonConstraints.join(". ");
+    }
+
+    return enhanced;
+  }
+
+  enhanceExpectedOutput(expectedOutput) {
+    if (!expectedOutput)
+      return "Complete solution with code examples and implementation steps";
+
+    let enhanced = expectedOutput;
+
+    // Make output expectations more specific
+    if (enhanced.length < 30) {
+      enhanced +=
+        ". Include: code examples, step-by-step instructions, and explanation of approach";
+    }
+
+    // Add testing/validation suggestions
+    if (
+      !enhanced.toLowerCase().includes("test") &&
+      !enhanced.toLowerCase().includes("verify")
+    ) {
+      enhanced += ". Suggest how to test/verify the solution";
+    }
+
+    // Add documentation hints for complex tasks
+    if (
+      enhanced.toLowerCase().includes("architecture") ||
+      enhanced.toLowerCase().includes("refactor")
+    ) {
+      enhanced += ". Include documentation for future maintenance";
+    }
+
+    return enhanced;
+  }
+
+  getWorkspaceTypeHint() {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) return null;
+
+    const basePath = workspaceFolder.uri.fsPath;
+    if (fs.existsSync(path.join(basePath, "version.php"))) return "Moodle";
+    if (fs.existsSync(path.join(basePath, "package.json")))
+      return "React/Node.js";
+    return null;
   }
 
   showPromptHistory() {
@@ -417,20 +583,55 @@ Expected Output: ${data.expectedOutput}`;
         <html>
         <head>
             <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; }
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background: var(--vscode-editor-background); color: var(--vscode-editor-foreground); }
                 .form-group { margin-bottom: 15px; }
-                label { display: block; margin-bottom: 5px; font-weight: bold; }
-                input, textarea, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+                label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--vscode-editor-foreground); }
+                input, textarea, select { 
+                    width: 100%; 
+                    padding: 8px; 
+                    border: 1px solid var(--vscode-input-border); 
+                    border-radius: 4px; 
+                    background: var(--vscode-input-background);
+                    color: var(--vscode-input-foreground);
+                    font-family: inherit;
+                }
                 textarea { min-height: 80px; resize: vertical; }
-                button { background: #007ACC; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
-                button:hover { background: #005a9e; }
-                .context-info { background: #f5f5f5; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
-                .model-suggestion { background: #e8f4fd; padding: 10px; border-radius: 4px; margin-top: 10px; }
+                button { 
+                    background: var(--vscode-button-background); 
+                    color: var(--vscode-button-foreground); 
+                    padding: 10px 20px; 
+                    border: none; 
+                    border-radius: 4px; 
+                    cursor: pointer; 
+                    font-family: inherit;
+                }
+                button:hover { background: var(--vscode-button-hoverBackground); }
+                .context-info { 
+                    background: var(--vscode-textBlockQuote-background); 
+                    border: 1px solid var(--vscode-textBlockQuote-border);
+                    padding: 10px; 
+                    border-radius: 4px; 
+                    margin-bottom: 15px;
+                    font-size: 0.9em;
+                    min-height: 20px;
+                }
+                .context-info.loading { 
+                    opacity: 0.7; 
+                    font-style: italic; 
+                }
+                .model-suggestion { 
+                    background: var(--vscode-editorInfo-background); 
+                    border: 1px solid var(--vscode-editorInfo-border);
+                    padding: 10px; 
+                    border-radius: 4px; 
+                    margin-top: 10px; 
+                }
+                h2 { color: var(--vscode-editor-foreground); margin-top: 0; }
             </style>
         </head>
         <body>
             <h2>Create Structured Prompt</h2>
-            <div class="context-info" id="contextInfo">Loading project context...</div>
+            <div class="context-info loading" id="contextInfo">Loading project context...</div>
             
             <form id="promptForm">
                 <div class="form-group">
@@ -467,7 +668,9 @@ Expected Output: ${data.expectedOutput}`;
                 const vscode = acquireVsCodeApi();
                 
                 // Load context on page load
-                vscode.postMessage({ command: 'getContext' });
+                window.addEventListener('load', () => {
+                    vscode.postMessage({ command: 'getContext' });
+                });
                 
                 window.addEventListener('message', event => {
                     const message = event.data;
@@ -478,18 +681,34 @@ Expected Output: ${data.expectedOutput}`;
                 
                 function displayContext(context) {
                     const info = document.getElementById('contextInfo');
-                    let html = '<strong>Project Context:</strong><br>';
-                    html += \`Project: \${context.projectName}<br>\`;
-                    html += \`Branch: \${context.gitBranch}<br>\`;
-                    html += \`Type: \${getProjectType(context)}<br>\`;
-                    html += \`Open Files: \${context.openFiles.map(f => f.fileName).join(', ') || 'None'}\`;
+                    info.classList.remove('loading');
+                    
+                    if (!context.projectName) {
+                        info.innerHTML = '<strong>No workspace detected</strong> - Open a project folder for enhanced context';
+                        return;
+                    }
+                    
+                    let html = '<strong>📁 Project Context:</strong><br>';
+                    html += \`<strong>Project:</strong> \${context.projectName}<br>\`;
+                    html += \`<strong>Branch:</strong> \${context.gitBranch}<br>\`;
+                    html += \`<strong>Type:</strong> \${getProjectType(context)}<br>\`;
+                    
+                    if (context.openFiles && context.openFiles.length > 0) {
+                        const fileList = context.openFiles.slice(0, 3).map(f => f.fileName).join(', ');
+                        const remaining = context.openFiles.length > 3 ? \` (+\${context.openFiles.length - 3} more)\` : '';
+                        html += \`<strong>Open Files:</strong> \${fileList}\${remaining}\`;
+                    } else {
+                        html += '<strong>Open Files:</strong> None';
+                    }
+                    
                     info.innerHTML = html;
                 }
                 
                 function getProjectType(context) {
-                    if (context.hasMoodleConfig) return 'Moodle Plugin';
-                    if (context.hasPackageJson) return 'Node.js/React';
-                    return 'General';
+                    if (context.hasMoodleConfig) return '🎓 Moodle Plugin';
+                    if (context.hasPackageJson) return '⚛️ Node.js/React';
+                    if (context.hasClaudeConfig) return '🤖 AI-Enhanced Project';
+                    return '📂 General Project';
                 }
                 
                 document.getElementById('promptForm').addEventListener('submit', (e) => {

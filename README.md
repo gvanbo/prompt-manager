@@ -1,65 +1,69 @@
-# prompt-manager README
+# AI Prompt Manager
 
-This is the README for your extension "prompt-manager". After writing up a brief description, we recommend including the following sections.
+Create, manage, and optimize AI prompts in VS Code with history, ratings, and tips.
+
+![Banner](images/banner.png)
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+| Feature | Details |
+|---|---|
+| Structured Prompt Creation | Guided flow to capture context, goals, and formatting |
+| Prompt History | Local history with ratings and quick reuse |
+| Optimization Tips | Suggestions to improve clarity, context, and constraints |
+| Quick Access | Command palette, keyboard shortcut, and editor context menu |
 
-For example if there is an image subfolder under your extension project workspace:
+## Screenshots
 
-\!\[feature X\]\(images/feature-x.png\)
+> Replace these with real screenshots from your extension.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+![Create Prompt](images/screenshot-create.png)
+![History](images/screenshot-history.png)
 
-## Requirements
+## Commands
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+| Command ID | Title | Shortcut |
+|---|---|---|
+| `promptManager.createPrompt` | Create Structured Prompt | `Ctrl+Alt+P` (Windows/Linux), `Cmd+Alt+P` (macOS) |
+| `promptManager.viewHistory` | View Prompt History | — |
+| `promptManager.ratePrompt` | Rate Last Prompt | — |
+| `promptManager.optimizePrompt` | Show Optimization Tips | — |
 
-## Extension Settings
+## Installation
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- From Marketplace: search for "AI Prompt Manager" by `gvanbo`.
+- From VSIX: in VS Code, Extensions view → … menu → Install from VSIX… and choose `prompt-manager-*.vsix`.
 
-For example:
+## Usage
 
-This extension contributes the following settings:
+1. Run "Create Structured Prompt" to start a new prompt.
+2. Provide context, goals, and formatting preferences.
+3. Use the generated prompt with your AI tool.
+4. Rate the result; revisit history to iterate.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+## Development
 
-## Known Issues
+Prerequisites: Node 18+, VS Code 1.74+.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- Build: `npm run package`
+- Watch: `npm run watch`
+- Run extension: press F5 in VS Code to launch the Extension Development Host.
+
+## Testing
+
+We use `@vscode/test-electron` + Mocha.
+
+- Run tests: `npm test`
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
+- Structured prompt creation
+- Prompt history tracking
+- Optimization tips
+- Keyboard shortcuts and menu integration
 
-### 1.0.1
+## License
 
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+MIT © 2025 gvanbo

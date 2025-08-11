@@ -1,0 +1,4 @@
+{
+  // Disable automatic injection so shell integration isn't enabled for every shell
+  "terminal.integrated.shellIntegration.enabled": false
+}
