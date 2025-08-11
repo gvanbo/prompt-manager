@@ -19,7 +19,9 @@
     "ai",
     "prompt",
     "productivity",
-    "manager"
+    "manager",
+    "claude",
+    "gemini"
   ],
   "engines": {
     "vscode": "^1.74.0"
