@@ -18,7 +18,15 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run package
+      # --- Added virtual display step for GUI tests ---
+      - name: Start xvfb
+        run: |
+          export DISPLAY=':99.0'
+          nohup Xvfb :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+      # --- Updated test step to use virtual display ---
       - name: Run tests
+        env:
+          DISPLAY: ':99.0'
         run: npm test
       - name: Package VSIX
         run: npx vsce package --no-dependencies
